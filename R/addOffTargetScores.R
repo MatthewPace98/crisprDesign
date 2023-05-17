@@ -202,6 +202,12 @@ setMethod("addOffTargetScores", "NULL", function(object){
                                                includeDistance=includeDistance)
         aln$score_mit <- score_mit$score
     }
+        
+    if (isCas9){
+        score_crista <- crisprScore::getCRISTAScores(spacers=spacers,
+                                               protospacers=protospacers)
+        aln$score_crista <- score_crista$score
+    }
 
     
     
