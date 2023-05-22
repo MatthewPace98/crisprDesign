@@ -204,6 +204,32 @@ setMethod("addOffTargetScores", "NULL", function(object){
     }
         
     if (isCas9){
+        # TODO: find more elegant way to edit scoringMethodsInfo.
+        crista_row <- data.frame(method = "crista",
+                      nuclease = "SpCas9",
+                      left = -22,
+                      right = 6,
+                      type = "Off-target",
+                      label = "CRISTA",
+                      len = 29)
+
+        scoringMethodsInfo <- rbind(scoringMethodsInfo, crista_row)
+        
+        roster <- roster[roster$method == 'crista', , drop=FALSE]
+        left  <- roster$left
+        right <- roster$right
+        extendedSequences <- .getExtendedSequences(guideSet,
+                                                   start=left,
+                                                   end=right)
+        good <- !is.na(extendedSequences)
+        scores <- rep(NA, length(extendedSequences))
+        if (any(good)){
+        seqs <- extendedSequences[good]
+        results <- crisprScore::getCRISTAScores(as.character(guideSet$protospacer), 
+                                                seqs)
+        }
+        scores[good] <- results$score
+ 
         score_crista <- crisprScore::getCRISTAScores(spacers=spacers,
                                                protospacers=protospacers)
         aln$score_crista <- score_crista$score
@@ -221,6 +247,69 @@ setMethod("addOffTargetScores", "NULL", function(object){
     
     return(guideSet)
 }
+
+.getExtendedSequences <- function(guideSet,
+                                  start,
+                                  end
+){
+  guideSet <- .validateGuideSet(guideSet)
+  
+  gr <- guideSet
+  wh_neg <- which(as.character(strand(gr))=="-")
+  # The order of resizing IRanges matters
+  # to presever the validity of a positive width.
+  if (start>0 & end>0){
+    end(gr)   <- end(guideSet)+end
+    start(gr) <- start(guideSet)+start
+    start(gr)[wh_neg] <- start(guideSet)[wh_neg]-end
+    end(gr)[wh_neg]   <- end(guideSet)[wh_neg]-start
+  } else {
+    start(gr) <- start(guideSet)+start
+    end(gr)   <- end(guideSet)+end
+    end(gr)[wh_neg]   <- end(guideSet)[wh_neg]-start
+    start(gr)[wh_neg] <- start(guideSet)[wh_neg]-end
+  }
+  
+  gr <- GenomicRanges::trim(gr) #Taking care of invalid values
+  
+  
+  
+  good <- which(as.character(strand(gr)) %in% c("+", "-"))
+  out <- rep(NA_character_, length(gr))
+  names(out) <- names(gr)
+  if (length(good)==0){
+    return(out)
+  } 
+  if (targetOrigin(guideSet)=="customSequences"){
+    seqs <- getSeq(customSequences(guideSet),gr[good])
+  } else {
+    seqs <- getSeq(bsgenome(guideSet), gr[good])
+  }
+  seqs <- as.character(seqs)
+  
+  #Making sure the sequences are not out of bound:
+  len <- end-start+1 # Expected length
+  seqs[seqs==""] <- NA
+  seqs[nchar(seqs)<len] <- NA
+  out[good] <- seqs
+  return(out)
+}
+
+
+
+.validateGuideSet <- function(obj,
+                              eMessage=NULL
+){
+  if (is.null(eMessage)){
+    eMessage <- "guideSet argument must be a GuideSet object."
+  }
+  isGuideSet <- methods::is(obj, "GuideSet")
+  if (!isGuideSet){
+    stop(eMessage)
+  }
+  return(obj)
+}
+
 
 
 # Add aggregated off-target scores to the GuideSet
