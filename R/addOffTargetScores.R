@@ -215,9 +215,10 @@ setMethod("addOffTargetScores", "NULL", function(object){
               
               
               utils::data("scoringMethodsInfo", package="crisprScore", envir=environment())
+              scoringMethodsInfo <- rbind(scoringMethodsInfo, crista_row)
+
               roster <- scoringMethodsInfo
 
-              scoringMethodsInfo <- rbind(scoringMethodsInfo, crista_row)
         
               roster <- roster[roster$method == 'crista', , drop=FALSE]
               left  <- roster$left
