@@ -225,13 +225,11 @@ setMethod("addOffTargetScores", "NULL", function(object){
         scores <- rep(NA, length(extendedSequences))
         if (any(good)){
         seqs <- extendedSequences[good]
-        results <- crisprScore::getCRISTAScores(as.character(guideSet$protospacer), 
-                                                seqs)
+        results <- crisprScore::getCRISTAScores(protospacer=protospacers, 
+                                                spacer=seqs)
         }
-        scores[good] <- results$score
- 
-        score_crista <- crisprScore::getCRISTAScores(spacers=spacers,
-                                               protospacers=protospacers)
+        score_crista <- results$score
+
         aln$score_crista <- score_crista$score
     }
 
