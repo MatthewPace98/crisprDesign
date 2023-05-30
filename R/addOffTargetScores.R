@@ -212,33 +212,34 @@ setMethod("addOffTargetScores", "NULL", function(object){
                       type = "Off-target",
                       label = "CRISTA",
                       len = 29)
+              
+              
+              utils::data("scoringMethodsInfo", package="crisprScore", envir=environment())
+              roster <- scoringMethodsInfo
 
-        scoringMethodsInfo <- rbind(scoringMethodsInfo, crista_row)
+              scoringMethodsInfo <- rbind(scoringMethodsInfo, crista_row)
         
-        roster <- roster[roster$method == 'crista', , drop=FALSE]
-        left  <- roster$left
-        right <- roster$right
-        extendedSequences <- .getExtendedSequences(guideSet,
-                                                   start=left,
-                                                   end=right)
-        good <- !is.na(extendedSequences)
-        scores <- rep(NA, length(extendedSequences))
-        if (any(good)){
-        seqs <- extendedSequences[good]
-        results <- crisprScore::getCRISTAScores(protospacer=protospacers, 
-                                                spacer=seqs)
-        }
-        score_crista <- results$score
-
-        aln$score_crista <- score_crista$score
+              roster <- roster[roster$method == 'crista', , drop=FALSE]
+              left  <- roster$left
+              right <- roster$right
+              extendedSequences <- .getExtendedSequences(guideSet,
+                                                        start=left,
+                                                        end=right)
+              good <- !is.na(extendedSequences)
+              scores <- rep(NA, length(extendedSequences))
+              if (any(good)){
+                    seqs <- extendedSequences[good]
+                     results <- crisprScore::getCRISTAScores(protospacer=protospacers, 
+                                                             spacer=seqs)
+              }
+              score_crista <- results$score
+              aln$score_crista <- score_crista$score
     }
-
-    
     
     guideSetSpacers <- spacers(guideSet, as.character=TRUE)
     aln <- S4Vectors::split(aln,
                             f=factor(aln$spacer,
-                                     levels=unique(guideSetSpacers)))
+                            levels=unique(guideSetSpacers)))
     aln <- aln[guideSetSpacers]
     names(aln) <- names(guideSet)
     S4Vectors::mcols(guideSet)[["alignments"]] <- aln
