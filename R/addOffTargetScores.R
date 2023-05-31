@@ -234,7 +234,7 @@ setMethod("addOffTargetScores", "NULL", function(object){
                                                              spacer=seqs)
               }
               score_crista <- results$score
-              aln$score_crista <- score_crista$score
+              aln$score_crista <- score_crista
     }
     
     guideSetSpacers <- spacers(guideSet, as.character=TRUE)
