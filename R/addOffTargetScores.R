@@ -203,39 +203,53 @@ setMethod("addOffTargetScores", "NULL", function(object){
         aln$score_mit <- score_mit$score
     }
         
-    if (isCas9){
-        # TODO: find more elegant way to edit scoringMethodsInfo.
-        crista_row <- data.frame(method = "crista",
-                      nuclease = "SpCas9",
-                      left = -22,
-                      right = 6,
-                      type = "Off-target",
-                      label = "CRISTA",
-                      len = 29)
-              
-              
-              utils::data("scoringMethodsInfo", package="crisprScore", envir=environment())
-              scoringMethodsInfo <- rbind(scoringMethodsInfo, crista_row)
+if (isCas9){
+  # TODO: find more elegant way to edit scoringMethodsInfo.
+  crista_row <- data.frame(method = "crista",
+                           nuclease = "SpCas9",
+                           left = -22,
+                           right = 6,
+                           type = "Off-target",
+                           label = "CRISTA",
+                           len = 29)
+  
+  utils::data("scoringMethodsInfo", package="crisprScore", envir=environment())
+  scoringMethodsInfo <- rbind(scoringMethodsInfo, crista_row)
+  
+  roster <- scoringMethodsInfo
+  
+  
+  roster <- roster[roster$method == 'crista', , drop=FALSE]
+  left  <- roster$left
+  right <- roster$right
+  extendedSequences <- .getExtendedSequences(guideSet,
+                                             start=left,
+                                             end=right)
+  good <- !is.na(extendedSequences)
+  scores <- rep(NA, length(extendedSequences))
+  seqs <- extendedSequences[good]
 
-              roster <- scoringMethodsInfo
 
-        
-              roster <- roster[roster$method == 'crista', , drop=FALSE]
-              left  <- roster$left
-              right <- roster$right
-              extendedSequences <- .getExtendedSequences(guideSet,
-                                                        start=left,
-                                                        end=right)
-              good <- !is.na(extendedSequences)
-              scores <- rep(NA, length(extendedSequences))
-              if (any(good)){
-                    seqs <- extendedSequences[good]
-                     results <- crisprScore::getCRISTAScores(protospacer=as.character(guideSet$protospacer), 
-                                                             spacer=seqs)
-              }
-              score_crista <- results$score
-              aln$score_crista <- score_crista
-    }
+  # Generates spacer list to match protospacer list length
+  i <- 1  
+  crista_spacers <- vector()
+  previous_spacer <- spacers[1]  
+  for (j in 1:length(spacers)) {
+    if (spacers[j] != previous_spacer) {
+      i <- i + 1  
+    }    
+    previous_spacer <- spacers[j]
+    crista_spacers[j] <- seqs[i]
+  }
+  
+  crista_protospacers <- as.character(guideSet$protospacer)
+  results <- crisprScore::getCRISTAScores(protospacer=crista_protospacers), 
+                                          spacer=crista_spacers)
+  
+  score_crista <- results$score
+  aln$score_crista <- score_crista
+}
+
     
     guideSetSpacers <- spacers(guideSet, as.character=TRUE)
     aln <- S4Vectors::split(aln,
