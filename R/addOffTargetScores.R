@@ -242,8 +242,8 @@ if (isCas9){
     crista_spacers[j] <- seqs[i]
   }
   
-  crista_protospacers <- as.character(guideSet$protospacer)
-  results <- crisprScore::getCRISTAScores(protospacer=crista_protospacers), 
+  crista_protospacers <- as.character(aln$protospacer)
+  results <- crisprScore::getCRISTAScores(protospacer=crista_protospacers, 
                                           spacer=crista_spacers)
   
   score_crista <- results$score
