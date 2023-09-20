@@ -213,12 +213,28 @@ if (isCas9){
                            label = "CRISTA",
                            len = 29)
   
+  primer3_ngs_row <- data.frame(method = "primer3-ngs",
+                           nuclease = "SpCas9",
+                           left = -95,
+                           right = 74,
+                           type = "primer-design",
+                           label = "primer3-ngs",
+                           len = 170)
+  
+  primer3_sanger_row <- data.frame(method = "primer3-sanger",
+                           nuclease = "SpCas9",
+                           left = -220,
+                           right = 199,
+                           type = "primer-design",
+                           label = "primer3-sanger",
+                           len = 420)
   utils::data("scoringMethodsInfo", package="crisprScore", envir=environment())
   scoringMethodsInfo <- rbind(scoringMethodsInfo, crista_row)
-  
-  roster <- scoringMethodsInfo
-  
-  
+  scoringMethodsInfo <- rbind(scoringMethodsInfo, primer3_ngs_row)
+  scoringMethodsInfo <- rbind(scoringMethodsInfo, primer3_sanger_row)
+
+  ### CRISTA
+  roster <- scoringMethodsInfo  
   roster <- roster[roster$method == 'crista', , drop=FALSE]
   left  <- roster$left
   right <- roster$right
@@ -228,7 +244,6 @@ if (isCas9){
   good <- !is.na(extendedSequences)
   scores <- rep(NA, length(extendedSequences))
   seqs <- extendedSequences[good]
-
 
   # Generates spacer list to match protospacer list length
   i <- 1  
@@ -250,16 +265,50 @@ if (isCas9){
   aln$score_crista <- score_crista
 }
 
+
+
+  ### Next-generation sequencing
+  roster <- scoringMethodsInfo
+  roster <- roster[roster$method == 'primer3-ngs', , drop=FALSE]
+  left  <- roster$left
+  right <- roster$right
+  extendedSequences <- .getExtendedSequences(guideSet,
+                                             start=left,
+                                             end=right)
+  good <- !is.na(extendedSequences)
+  seqs <- extendedSequences[good]
+
+  results <- crisprScore::getPrimers()
+  
+
+
+  ### Sanger trace deconvolution
+  roster <- scoringMethodsInfo
+  roster <- roster[roster$method == 'primer3-sanger', , drop=FALSE]
+  left  <- roster$left
+  right <- roster$right
+  extendedSequences <- .getExtendedSequences(guideSet,
+                                             start=left,
+                                             end=right)
+  good <- !is.na(extendedSequences)
+  seqs <- extendedSequences[good]
+
+  results <- crisprScore::getPrimers()
+
+
+
+
     
-    guideSetSpacers <- spacers(guideSet, as.character=TRUE)
-    aln <- S4Vectors::split(aln,
-                            f=factor(aln$spacer,
-                            levels=unique(guideSetSpacers)))
-    aln <- aln[guideSetSpacers]
-    names(aln) <- names(guideSet)
-    S4Vectors::mcols(guideSet)[["alignments"]] <- aln
+  guideSetSpacers <- spacers(guideSet, as.character=TRUE)
+  aln <- S4Vectors::split(aln,
+                          f=factor(aln$spacer,
+                          levels=unique(guideSetSpacers)))
+  aln <- aln[guideSetSpacers]
+  names(aln) <- names(guideSet)
+  S4Vectors::mcols(guideSet)[["alignments"]] <- aln
+          
     
-    return(guideSet)
+  return(guideSet)
 }
 
 .getExtendedSequences <- function(guideSet,
