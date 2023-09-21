@@ -204,43 +204,10 @@ setMethod("addOffTargetScores", "NULL", function(object){
     }
         
 if (isCas9){
-  # TODO: find more elegant way to edit scoringMethodsInfo.
-  crista_row <- data.frame(method = "crista",
-                           nuclease = "SpCas9",
-                           left = -22,
-                           right = 6,
-                           type = "Off-target",
-                           label = "CRISTA",
-                           len = 29)
-  
-  primer3_ngs_row <- data.frame(method = "primer3-ngs",
-                           nuclease = "SpCas9",
-                           left = -95,
-                           right = 74,
-                           type = "primer-design",
-                           label = "primer3-ngs",
-                           len = 170)
-  
-  primer3_sanger_row <- data.frame(method = "primer3-sanger",
-                           nuclease = "SpCas9",
-                           left = -220,
-                           right = 199,
-                           type = "primer-design",
-                           label = "primer3-sanger",
-                           len = 420)
-  utils::data("scoringMethodsInfo", package="crisprScore", envir=environment())
-  scoringMethodsInfo <- rbind(scoringMethodsInfo, crista_row)
-  scoringMethodsInfo <- rbind(scoringMethodsInfo, primer3_ngs_row)
-  scoringMethodsInfo <- rbind(scoringMethodsInfo, primer3_sanger_row)
-
-  ### CRISTA
-  roster <- scoringMethodsInfo  
-  roster <- roster[roster$method == 'crista', , drop=FALSE]
-  left  <- roster$left
-  right <- roster$right
+  # CRISTA
   extendedSequences <- .getExtendedSequences(guideSet,
-                                             start=left,
-                                             end=right)
+                                             start=-22,
+                                             end=6)
   good <- !is.na(extendedSequences)
   scores <- rep(NA, length(extendedSequences))
   seqs <- extendedSequences[good]
@@ -263,18 +230,12 @@ if (isCas9){
   
   score_crista <- results$score
   aln$score_crista <- score_crista
-}
 
 
-
-  ### Next-generation sequencing
-  roster <- scoringMethodsInfo
-  roster <- roster[roster$method == 'primer3-ngs', , drop=FALSE]
-  left  <- roster$left
-  right <- roster$right
+  # Next-generation sequencing primers
   extendedSequences <- .getExtendedSequences(guideSet,
-                                             start=left,
-                                             end=right)
+                                             start=-95,
+                                             end=74)
   good <- !is.na(extendedSequences)
   seqs <- extendedSequences[good]
 
@@ -282,14 +243,10 @@ if (isCas9){
   
 
 
-  ### Sanger trace deconvolution
-  roster <- scoringMethodsInfo
-  roster <- roster[roster$method == 'primer3-sanger', , drop=FALSE]
-  left  <- roster$left
-  right <- roster$right
+  ### Sanger trace deconvolution primers
   extendedSequences <- .getExtendedSequences(guideSet,
-                                             start=left,
-                                             end=right)
+                                             start=-220,
+                                             end=199)
   good <- !is.na(extendedSequences)
   seqs <- extendedSequences[good]
 
@@ -334,8 +291,6 @@ if (isCas9){
   }
   
   gr <- GenomicRanges::trim(gr) #Taking care of invalid values
-  
-  
   
   good <- which(as.character(strand(gr)) %in% c("+", "-"))
   out <- rep(NA_character_, length(gr))
