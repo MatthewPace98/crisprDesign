@@ -231,31 +231,6 @@ if (isCas9){
   score_crista <- results$score
   aln$score_crista <- score_crista
 
-
-  # Next-generation sequencing primers
-  extendedSequences <- .getExtendedSequences(guideSet,
-                                             start=-95,
-                                             end=74)
-  good <- !is.na(extendedSequences)
-  seqs <- extendedSequences[good]
-
-  results <- crisprScore::getPrimers()
-  
-
-
-  ### Sanger trace deconvolution primers
-  extendedSequences <- .getExtendedSequences(guideSet,
-                                             start=-220,
-                                             end=199)
-  good <- !is.na(extendedSequences)
-  seqs <- extendedSequences[good]
-
-  results <- crisprScore::getPrimers()
-
-
-
-
-    
   guideSetSpacers <- spacers(guideSet, as.character=TRUE)
   aln <- S4Vectors::split(aln,
                           f=factor(aln$spacer,
