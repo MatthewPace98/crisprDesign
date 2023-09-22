@@ -10,7 +10,7 @@
 setMethod("addPrimers",
           "GuideSet",
           function(object,
-                   flank=75,
+                   flank=75
 ){
     object <- .validateGuideSet(object)
     object <- .addPrimers(guideSet=object,
