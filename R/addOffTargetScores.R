@@ -202,6 +202,7 @@ setMethod("addOffTargetScores", "NULL", function(object){
                                                includeDistance=includeDistance)
         aln$score_mit <- score_mit$score
     }
+          }
         
 if (isCas9){
   # CRISTA
@@ -288,23 +289,6 @@ if (isCas9){
   return(out)
 }
 
-
-
-.validateGuideSet <- function(obj,
-                              eMessage=NULL
-){
-  if (is.null(eMessage)){
-    eMessage <- "guideSet argument must be a GuideSet object."
-  }
-  isGuideSet <- methods::is(obj, "GuideSet")
-  if (!isGuideSet){
-    stop(eMessage)
-  }
-  return(obj)
-}
-
-
-
 # Add aggregated off-target scores to the GuideSet
 #' @importFrom S4Vectors mcols mcols<-
 .addOffTargetScoresToGuideSet <- function(guideSet,
@@ -363,4 +347,3 @@ if (isCas9){
     
     return(guideSet)
 }
-
