@@ -7,7 +7,7 @@
 #' @export
 #' @rdname addPrimers
 #' @importFrom S4Vectors split mcols<-
-setMethod("addPrimers",
+setMethod(".addPrimers",
           "GuideSet",
           function(object,
                    flank=75
