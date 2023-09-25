@@ -92,6 +92,18 @@ setGeneric("editedAlleles",
            function(object, ...) standardGeneric("editedAlleles"))
 
 
+#' @rdname GuideSet-class
+#' @export
+setGeneric("txTable",
+           function(object, ...) standardGeneric("txTable"))
+
+
+#' @rdname GuideSet-class
+#' @export
+setGeneric("exonTable",
+           function(object, ...) standardGeneric("exonTable"))
+
+
 #' @rdname PairedGuideSet-class
 #' @export
 setGeneric("pamOrientation",
@@ -259,14 +271,10 @@ setGeneric("addEditingSites",
            function(object, ...) standardGeneric("addEditingSites"))
 
 
-
-
 #' @rdname GuideSet-class
 #' @export
 setGeneric("addCutSites",
            function(object, ...) standardGeneric("addCutSites"))
-
-
 
 
 
@@ -282,10 +290,14 @@ setGeneric("addSpacerAlignmentsIterative",
            function(object, ...) standardGeneric("addSpacerAlignmentsIterative"))
 
 
-
-
 #' @rdname addNtcs
 #' @export
 setGeneric("addNtcs",
            function(object, ...) standardGeneric("addNtcs"))
+
+           
+#' @rdname addPrimers
+#' @export
+setGeneric("addPrimers",
+           function(object, ...) standardGeneric("addPrimers"))
 
