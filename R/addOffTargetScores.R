@@ -201,10 +201,7 @@ setMethod("addOffTargetScores", "NULL", function(object){
                                                pams=pams,
                                                includeDistance=includeDistance)
         aln$score_mit <- score_mit$score
-    }
-          }
         
-if (isCas9){
   # CRISTA
   extendedSequences <- .getExtendedSequences(guideSet,
                                              start=-22,
