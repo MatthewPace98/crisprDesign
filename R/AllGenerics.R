@@ -271,14 +271,10 @@ setGeneric("addEditingSites",
            function(object, ...) standardGeneric("addEditingSites"))
 
 
-
-
 #' @rdname GuideSet-class
 #' @export
 setGeneric("addCutSites",
            function(object, ...) standardGeneric("addCutSites"))
-
-
 
 
 
@@ -294,10 +290,14 @@ setGeneric("addSpacerAlignmentsIterative",
            function(object, ...) standardGeneric("addSpacerAlignmentsIterative"))
 
 
-
-
 #' @rdname addNtcs
 #' @export
 setGeneric("addNtcs",
            function(object, ...) standardGeneric("addNtcs"))
+
+           
+#' @rdname addPrimers
+#' @export
+setGeneric("addPrimers",
+           function(object, ...) standardGeneric("addPrimers"))
 
