@@ -94,15 +94,11 @@ setMethod("addOffTargetScores",
 })
 
 
-
-
-
 #' @rdname addOffTargetScores
 #' @export
 setMethod("addOffTargetScores", "NULL", function(object){
     return(NULL)
 })
-
 
 
 #' @importFrom S4Vectors mcols isTRUEorFALSE
@@ -228,7 +224,7 @@ setMethod("addOffTargetScores", "NULL", function(object){
   
   score_crista <- results$score
   aln$score_crista <- score_crista
-
+}
   guideSetSpacers <- spacers(guideSet, as.character=TRUE)
   aln <- S4Vectors::split(aln,
                           f=factor(aln$spacer,
@@ -240,6 +236,7 @@ setMethod("addOffTargetScores", "NULL", function(object){
     
   return(guideSet)
 }
+          
 
 .getExtendedSequences <- function(guideSet,
                                   start,
@@ -341,6 +338,5 @@ setMethod("addOffTargetScores", "NULL", function(object){
         mitIndices <- match(spacers, names(mit))
         S4Vectors::mcols(guideSet)[["score_mit"]] <- mit[mitIndices]
     }
-    
     return(guideSet)
 }
