@@ -7,13 +7,13 @@
 #' @export
 #' @rdname addPrimers
 #' @importFrom S4Vectors split mcols<-
-setMethod(".addPrimers",
+setMethod("addPrimers",
           "GuideSet",
           function(object,
                    flank=75
 ){
     object <- .validateGuideSet(object)
-    object <- .addPrimers(guideSet=object,
+    object <- .addPrimersToGuideSet(guideSet=object,
                           flank=flank)
     return(object)
 })
@@ -25,7 +25,7 @@ setMethod("addPrimers", "NULL", function(object){
     return(NULL)
 })
 
-.addPrimers <- function(guideSet,
+.addPrimersToGuideSet <- function(guideSet,
                         flank
                         ){
   start <- -flank-20
