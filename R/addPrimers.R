@@ -26,64 +26,61 @@ setMethod("addPrimers", "NULL", function(object){
 })
 
 .addPrimersToGuideSet <- function(guideSet,
-                        flank
-                        ){
-  start <- -flank-20
-  end <- flank-1
+                                  flank_len
+){
+  start <- -flank_len-20
+  end <- flank_len-1
   
   extendedSequences <- .getExtendedSequences(guideSet,
                                              start=start,
                                              end=end)
   good <- !is.na(extendedSequences)
   seqs <- extendedSequences[good]
-
-
-  ideal_len <- flank*2+20+20*2 # flanking regions, spacer, and primer pair
+  
+  ideal_len <- flank_len*2+20+20*2 # flanking regions, spacer, and primer pair
   range_low <- ideal_len-50
   range_high <- ideal_len+50
   df_list <- list()
-
-for (i in seq_along(extendedSequences)) {
   
-  input_str <- paste0("SEQUENCE_ID=", names(seqs)[i], "\n",
-                      "SEQUENCE_TEMPLATE=", seqs[[i]], "\n",
-                      "SIZE_RANGE=", range_low, "-", 
-                      range_high, "\n=") 
-  
-  # write the input string to a temporary file
-  input_file <- tempfile()
-  writeLines(input_str, input_file)
-  
-  cmd <- paste("cat", input_file, "| primer3/src/primer3_core")
-  
-  # Capture the output of the command
-  cmd_output <- system(cmd, intern = TRUE)
-  
-  # Remove empty strings from the output
-  cmd_output <- cmd_output[nzchar(cmd_output)]
-  
-  # Initialize vectors to hold column names and values
-  col_names <- c()
-  values <- c()
-  
-  # Loop over each line in the output to separate column names and values
-  for(line in cmd_output) {
-    split_line <- strsplit(line, "=")[[1]]
-    if(length(split_line) == 2) { # If line can be split into name and value
-      col_names <- c(col_names, split_line[1])
-      values <- c(values, split_line[2])
+  for (i in seq_along(extendedSequences)) {
+    
+    input_str <- paste0("SEQUENCE_ID=", names(seqs)[i], "\n",
+                        "SEQUENCE_TEMPLATE=", seqs[[i]], "\n",
+                        "SIZE_RANGE=", range_low, "-", 
+                        range_high, "\n=") 
+    
+    # write the input string to a temporary file
+    input_file <- tempfile()
+    writeLines(input_str, input_file)
+    
+    cmd <- paste("cat", input_file, "| primer3/src/primer3_core")
+    
+    # Capture the output of the command
+    cmd_output <- system(cmd, intern = TRUE)
+    
+    # Remove empty strings from the output
+    cmd_output <- cmd_output[nzchar(cmd_output)]
+    
+    # Initialize vectors to hold column names and values
+    col_names <- c()
+    values <- c()
+    
+    # Loop over each line in the output to separate column names and values
+    for(line in cmd_output) {
+      split_line <- strsplit(line, "=")[[1]]
+      if(length(split_line) == 2) { # If line can be split into name and value
+        col_names <- c(col_names, split_line[1])
+        values <- c(values, split_line[2])
+      }
     }
+    
+    # Create a dataframe from column names and values and add it to the list
+    df_list[[i]] <- as.data.frame(t(values), stringsAsFactors = FALSE)
+    colnames(df_list[[i]]) <- col_names
+    
   }
-  
-  # Create a dataframe from column names and values and add it to the list
-  df_list[[i]] <- as.data.frame(t(values), stringsAsFactors = FALSE)
-  colnames(df_list[[i]]) <- col_names
-  
-}
-
-# Bind all dataframes in the list to create the final dataframe
-primer3_out <- do.call(rbind, df_list)
-
+  # Bind all dataframes in the list to create the final dataframe
+  primers <- do.call(rbind, df_list)
   S4Vectors::mcols(guideSet)[["primers"]] <- primers
 }
 
