@@ -10,7 +10,8 @@
 setMethod("addPrimers",
           "GuideSet",
           function(object,
-                   flank=75
+                   flank=75,
+                   name="primer_design"
 ){
     object <- .validateGuideSet(object)
     object <- .addPrimersToGuideSet(guideSet=object,
@@ -21,12 +22,15 @@ setMethod("addPrimers",
 
 #' @rdname addPrimers
 #' @export
-setMethod("addPrimers", "NULL", function(object){
+setMethod("addPrimers", 
+          "NULL", 
+          function(object){
     return(NULL)
 })
 
 .addPrimersToGuideSet <- function(guideSet,
-                                  flank_len
+                                  flank_len,
+                                  s4_colname
 ){
   start <- -flank_len-20
   end <- flank_len-1
@@ -37,15 +41,15 @@ setMethod("addPrimers", "NULL", function(object){
   good <- !is.na(extendedSequences)
   seqs <- extendedSequences[good]
   
-  ideal_len <- flank_len*2+20+20*2 # flanking regions, spacer, and primer pair
+  ideal_len <- flank_len*2+20+(20*2) # flanking regions, spacer, and primer pair
   range_low <- ideal_len-50
   range_high <- ideal_len+50
   df_list <- list()
-  
+  n_primer_pairs <- 3
   for (i in seq_along(extendedSequences)) {
-    
     input_str <- paste0("SEQUENCE_ID=", names(seqs)[i], "\n",
                         "SEQUENCE_TEMPLATE=", seqs[[i]], "\n",
+                        "PRIMER_NUM_RETURN=" n_primer_pairs,
                         "SIZE_RANGE=", range_low, "-", 
                         range_high, "\n=") 
     
@@ -77,13 +81,16 @@ setMethod("addPrimers", "NULL", function(object){
     # Create a dataframe from column names and values and add it to the list
     df_list[[i]] <- as.data.frame(t(values), stringsAsFactors = FALSE)
     colnames(df_list[[i]]) <- col_names
-    
   }
-  # Bind all dataframes in the list to create the final dataframe
-  primers <- do.call(rbind, df_list)
-  S4Vectors::mcols(guideSet)[["primers"]] <- primers
-}
 
+  primers <- do.call(rbind, df_list)
+
+  # Subset the dataframe to include only columns whose names end with "SEQUENCE" or "PRODUCT_SIZE"
+  primers <- primers[, grepl("SEQUENCE$|PRODUCT_SIZE$", colnames(primers))]
+
+  S4Vectors::mcols(guideSet)[[s4_colname]] <- primers
+  return(guideSet)
+}
 
 
 .getExtendedSequences <- function(guideSet,
