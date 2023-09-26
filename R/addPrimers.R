@@ -15,7 +15,8 @@ setMethod("addPrimers",
 ){
     object <- .validateGuideSet(object)
     object <- .addPrimersToGuideSet(guideSet=object,
-                          flank=flank)
+                          flank=flank,
+                           s4_colname=name)
     return(object)
 })
 
@@ -49,7 +50,7 @@ setMethod("addPrimers",
   for (i in seq_along(extendedSequences)) {
     input_str <- paste0("SEQUENCE_ID=", names(seqs)[i], "\n",
                         "SEQUENCE_TEMPLATE=", seqs[[i]], "\n",
-                        "PRIMER_NUM_RETURN=" n_primer_pairs,
+                        "PRIMER_NUM_RETURN=", n_primer_pairs,"\n",
                         "SIZE_RANGE=", range_low, "-", 
                         range_high, "\n=") 
     
@@ -88,6 +89,7 @@ setMethod("addPrimers",
   # Subset the dataframe to include only columns whose names end with "SEQUENCE" or "PRODUCT_SIZE"
   primers <- primers[, grepl("SEQUENCE$|PRODUCT_SIZE$", colnames(primers))]
 
+  s4_colname <- paste0("primer3_", s4_colname)
   S4Vectors::mcols(guideSet)[[s4_colname]] <- primers
   return(guideSet)
 }
