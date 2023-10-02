@@ -50,10 +50,11 @@ setMethod("addPrimers",
   for (i in seq_along(extendedSequences)) {
     input_str <- paste0("SEQUENCE_ID=", names(seqs)[i], "\n",
                         "SEQUENCE_TEMPLATE=", seqs[[i]], "\n",
-                        "PRIMER_NUM_RETURN=", n_primer_pairs,"\n",
-                        "SIZE_RANGE=", range_low, "-", 
-                        range_high, "\n=") 
-    
+                        "PRIMER_NUM_RETURN=", n_primer_pairs, "\n",
+                        "SIZE_RANGE=", range_low, "-", range_high, "\n", 
+                        "PRIMER_PRODUCT_SIZE_RANGE=", range_low, "-", range_high, "\n", 
+                        "=") 
+            
     # write the input string to a temporary file
     input_file <- tempfile()
     writeLines(input_str, input_file)
@@ -84,14 +85,28 @@ setMethod("addPrimers",
     colnames(df_list[[i]]) <- col_names
   }
 
-  primers <- do.call(rbind, df_list)
+  # Get all unique column names from all data frames in the list
+all_colnames <- unique(unlist(lapply(df_list, names)))
+
+# add missing columns
+harmonize_df <- function(df, all_colnames) {
+  missing_colnames <- setdiff(all_colnames, names(df))
+  df[missing_colnames] <- NA  # add missing columns with NA
+  df <- df[, all_colnames]  # optional, to order columns similarly
+  return(df)
+}
+
+harmonized_df_list <- lapply(df_list, harmonize_df, all_colnames = all_colnames)
+
+# rbind all harmonized data frames
+primers <- do.call(rbind, harmonized_df_list)
 
   # Subset the dataframe to include only columns whose names end with "SEQUENCE" or "PRODUCT_SIZE"
   primers <- primers[, grepl("SEQUENCE$|PRODUCT_SIZE$", colnames(primers))]
 
   s4_colname <- paste0("primer3_", s4_colname)
   S4Vectors::mcols(guideSet)[[s4_colname]] <- primers
-  return(guideSet)
+  return(c(guideSet, range_low, range_high))
 }
 
 
