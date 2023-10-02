@@ -106,7 +106,7 @@ primers <- do.call(rbind, harmonized_df_list)
 
   s4_colname <- paste0("primer3_", s4_colname)
   S4Vectors::mcols(guideSet)[[s4_colname]] <- primers
-  return(c(guideSet, range_low, range_high))
+  return(guideSet)
 }
 
 
