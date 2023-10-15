@@ -200,7 +200,7 @@ setMethod("addOffTargetScores", "NULL", function(object){
         
   # CRISTA
   run_crista <- FALSE  # CRISTA is currently too inefficient, and deprecated by its authors 
-  if run_crista == TRUE {
+  if (run_crista == TRUE){
      
   extendedSequences <- .getExtendedSequences(guideSet,
                                              start=-22,
