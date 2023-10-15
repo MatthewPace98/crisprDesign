@@ -199,6 +199,9 @@ setMethod("addOffTargetScores", "NULL", function(object){
         aln$score_mit <- score_mit$score
         
   # CRISTA
+  run_crista <- FALSE  # CRISTA is currently too inefficient, and deprecated by its authors 
+  if run_crista == TRUE {
+     
   extendedSequences <- .getExtendedSequences(guideSet,
                                              start=-22,
                                              end=6)
@@ -224,6 +227,7 @@ setMethod("addOffTargetScores", "NULL", function(object){
   
   score_crista <- results$score
   aln$score_crista <- score_crista
+  }
 }
   guideSetSpacers <- spacers(guideSet, as.character=TRUE)
   aln <- S4Vectors::split(aln,
