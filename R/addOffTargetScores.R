@@ -222,8 +222,8 @@ setMethod("addOffTargetScores", "NULL", function(object){
   }
   
   crista_protospacers <- as.character(aln$protospacer)
-  results <- crisprScore::getCRISTAScores(protospacer=crista_protospacers, 
-                                          spacer=crista_spacers)
+  #results <- crisprScore::getCRISTAScores(protospacer=crista_protospacers, 
+  #                                        spacer=crista_spacers)
   
   score_crista <- results$score
   aln$score_crista <- score_crista
