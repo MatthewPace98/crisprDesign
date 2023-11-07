@@ -10,12 +10,12 @@
 setMethod("addPrimers",
           "GuideSet",
           function(object,
-                   flank=75,
+                   flank_len=75,
                    name="primer_design"
 ){
     object <- .validateGuideSet(object)
     object <- .addPrimersToGuideSet(guideSet=object,
-                          flank=flank,
+                          flank_len=flank_len,
                            s4_colname=name)
     return(object)
 })
