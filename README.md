@@ -56,9 +56,9 @@ Introduction to crisprDesign
 - <a href="#session-info" id="toc-session-info">Session Info</a>
 - <a href="#references" id="toc-references">References</a>
 
-Authors: Jean-Philippe Fortin, Aaron Lun, Luke Hoberecht
+Authors: Jean-Philippe Fortin, Aaron Lun, Luke Hoberecht, Matthew Pace
 
-Date: July 1, 2022
+Date: November 27, 2023
 
 # Introduction
 
@@ -120,7 +120,7 @@ the following CRISPR-related package dependencies:
   gRNA spacers to genomes using the ungapped aligner `bowtie`
 - [crisprBwa](https://github.com/crisprVerse/crisprBWa): aligns gRNA
   spacers to genomes using the ungapped aligner `BWA`
-- [crisprScore](https://github.com/crisprVerse/crisprScore): implements
+- [crisprScore](https://github.com/MatthewPace98/crisprScore): implements
   state-of-the-art on- and off-target scoring algorithms
 - [crisprViz](https://github.com/crisprVerse/crisprViz): gRNA
   visualization using genomic tracks
@@ -1289,6 +1289,21 @@ guideSet <- rankSpacers(guideSet,
                         tx_id=tx_id)
 ```
 
+## Primer design
+
+The `addPrimers` function was added by Matthew Pace which uses `primer3`
+to generate primer sequences which are then added to the GuideSet object.
+
+``` r
+guideSet <- addPrimers(guideSet, 
+                        flank=80,
+                        name="ngs")
+```
+ The `flank` parameter allows for the customisation of the flanking region 
+ around the spacer binding site and `name` will be the name of the column in 
+ the GuideSet object where the primer information will be stored. This 
+ allows for multiple primer columns within the same GuideSet object.
+ 
 # CRISPRa/CRISPRi design
 
 For CRISPRa and CRISPRi applications, the CRISPR nuclease is engineered
