@@ -50,6 +50,15 @@ setMethod("addPrimers",
   for (i in seq_along(extendedSequences)) {
     input_str <- paste0("SEQUENCE_ID=", names(seqs)[i], "\n",
                         "SEQUENCE_TEMPLATE=", seqs[[i]], "\n",
+                        "PRIMER_OPT_SIZE=22\n", # Optimal Primer Length
+                        "PRIMER_MIN_TM=55\n", # Minimum Tm
+                        "PRIMER_OPT_TM=65\n", # Optimal Tm
+                        "PRIMER_MAX_TM=70\n", # Maximum Tm
+                        "PRIMER_OPT_GC_PERCENT=50\n", # Optimal GC%
+                        "PRIMER_SALT_MONOVALENT=40\n", # Concentration of Monovalent Cations
+                        "PRIMER_SALT_DIVALENT=2.5\n", # Concentration of Divalent Cations
+                        "PRIMER_DNA_CONC=50\n", # Annealing Oligo Concentration
+                        "PRIMER_DNTP_CONC=0.3\n", # dNTP Concentration
                         "PRIMER_NUM_RETURN=", n_primer_pairs, "\n",
                         "SIZE_RANGE=", range_low, "-", range_high, "\n", 
                         "PRIMER_PRODUCT_SIZE_RANGE=", range_low, "-", range_high, "\n", 
