@@ -111,7 +111,7 @@ harmonized_df_list <- lapply(df_list, harmonize_df, all_colnames = all_colnames)
 primers <- do.call(rbind, harmonized_df_list)
 
   # Subset the dataframe to include only columns whose names end with "SEQUENCE" or "PRODUCT_SIZE"
-  primers <- primers[, grepl("SEQUENCE$|PRODUCT_SIZE$", colnames(primers))]
+  #primers <- primers[, grepl("SEQUENCE$|PRODUCT_SIZE$", colnames(primers))]
 
   s4_colname <- paste0("primer3_", s4_colname)
   S4Vectors::mcols(guideSet)[[s4_colname]] <- primers
