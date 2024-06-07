@@ -57,7 +57,6 @@ setMethod("addPrimers",
                         "PRIMER_OPT_GC_PERCENT=50\n", # Optimal GC%
                         "PRIMER_SALT_MONOVALENT=40\n", # Concentration of Monovalent Cations
                         "PRIMER_SALT_DIVALENT=2.5\n", # Concentration of Divalent Cations
-                        "PRIMER_DNA_CONC=50\n", # Annealing Oligo Concentration
                         "PRIMER_DNTP_CONC=0.3\n", # dNTP Concentration
                         "PRIMER_NUM_RETURN=", n_primer_pairs, "\n",
                         "SIZE_RANGE=", range_low, "-", range_high, "\n", 
