@@ -20,6 +20,7 @@ setMethod("addPrimers",
                    PRIMER_SALT_MONOVALENT=40, # Concentration of Monovalent Cations
                    PRIMER_SALT_DIVALENT=2.5, # Concentration of Divalent Cations
                    PRIMER_DNTP_CONC=0.3, # dNTP Concentration
+                   PRIMER_PRODUCT_SIZE_RANGE=PRIMER_PRODUCT_SIZE_RANGE,
                    PRIMER_NUM_RETURN=3
 ){
     object <- .validateGuideSet(object)
@@ -34,7 +35,8 @@ setMethod("addPrimers",
                                     PRIMER_SALT_MONOVALENT=PRIMER_SALT_MONOVALENT, # Concentration of Monovalent Cations
                                     PRIMER_SALT_DIVALENT=PRIMER_SALT_DIVALENT, # Concentration of Divalent Cations
                                     PRIMER_DNTP_CONC=PRIMER_DNTP_CONC, # dNTP Concentration
-                                    PRIMER_NUM_RETURN=PRIMER_NUM_RETURN)
+                                    PRIMER_NUM_RETURN=PRIMER_NUM_RETURN,
+                                    PRIMER_PRODUCT_SIZE_RANGE=PRIMER_PRODUCT_SIZE_RANGE)
     return(object)
 })
 
@@ -58,7 +60,8 @@ setMethod("addPrimers",
                                   PRIMER_SALT_MONOVALENT,
                                   PRIMER_SALT_DIVALENT,
                                   PRIMER_DNTP_CONC,
-                                  PRIMER_NUM_RETURN
+                                  PRIMER_NUM_RETURN,
+                                  PRIMER_PRODUCT_SIZE_RANGE
 ){
   start <- -flank_len-20
   end <- flank_len-1
@@ -68,10 +71,6 @@ setMethod("addPrimers",
                                              end=end)
   good <- !is.na(extendedSequences)
   seqs <- extendedSequences[good]
-  
-  ideal_len <- flank_len*2+20+(20*2) # flanking regions, spacer, and primer pair
-  range_low <- ideal_len-50
-  range_high <- ideal_len+50
   df_list <- list()
   settings <- paste0("PRIMER_OPT_SIZE=", PRIMER_OPT_SIZE, "\n", # Optimal Primer Length
                         "PRIMER_MIN_TM=", PRIMER_MIN_TM, "\n", # Minimum Tm
@@ -82,7 +81,7 @@ setMethod("addPrimers",
                         "PRIMER_SALT_DIVALENT=", PRIMER_SALT_DIVALENT, "\n", # Concentration of Divalent Cations
                         "PRIMER_DNTP_CONC=", PRIMER_DNTP_CONC, "\n", # dNTP Concentration
                         "PRIMER_NUM_RETURN=", PRIMER_NUM_RETURN, "\n",
-                        "PRIMER_PRODUCT_SIZE_RANGE=", range_low, "-", range_high, "\n", 
+                        "PRIMER_PRODUCT_SIZE_RANGE=", PRIMER_PRODUCT_SIZE_RANGE, "\n", 
                         "=")
 for (i in seq_along(extendedSequences)) {
     input_str <- paste0("SEQUENCE_ID=", names(seqs)[i], "\n",
