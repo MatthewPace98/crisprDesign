@@ -11,7 +11,16 @@ setMethod("addPrimers",
           "GuideSet",
           function(object,
                    flank_len=75,
-                   name="primer_design"
+                   name="primer_design",
+                   PRIMER_OPT_SIZE=22, # Optimal Primer Length
+                   PRIMER_MIN_TM=55, # Minimum Tm
+                   PRIMER_OPT_TM=60, # Optimal Tm
+                   PRIMER_MAX_TM=65, # Maximum Tm
+                   PRIMER_OPT_GC_PERCENT=50, # Optimal GC%
+                   PRIMER_SALT_MONOVALENT=40, # Concentration of Monovalent Cations
+                   PRIMER_SALT_DIVALENT=2.5, # Concentration of Divalent Cations
+                   PRIMER_DNTP_CONC=0.3, # dNTP Concentration
+                   PRIMER_NUM_RETURN=3
 ){
     object <- .validateGuideSet(object)
     object <- .addPrimersToGuideSet(guideSet=object,
@@ -46,39 +55,35 @@ setMethod("addPrimers",
   range_low <- ideal_len-50
   range_high <- ideal_len+50
   df_list <- list()
-  n_primer_pairs <- 3
-  for (i in seq_along(extendedSequences)) {
+  settings <- paste0("PRIMER_OPT_SIZE=", PRIMER_OPT_SIZE, "\n", # Optimal Primer Length
+                        "PRIMER_MIN_TM=", PRIMER_MIN_TM, "\n", # Minimum Tm
+                        "PRIMER_OPT_TM=", PRIMER_OPT_TM, "\n", # Optimal Tm
+                        "PRIMER_MAX_TM=", PRIMER_MAX_TM, "\n", # Maximum Tm
+                        "PRIMER_OPT_GC_PERCENT=", PRIMER_OPT_GC_PERCENT, "\n", # Optimal GC%
+                        "PRIMER_SALT_MONOVALENT=", PRIMER_SALT_MONOVALENT, "\n", # Concentration of Monovalent Cations
+                        "PRIMER_SALT_DIVALENT=", PRIMER_SALT_DIVALENT, "\n", # Concentration of Divalent Cations
+                        "PRIMER_DNTP_CONC=", PRIMER_DNTP_CONC, "\n", # dNTP Concentration
+                        "PRIMER_NUM_RETURN=", PRIMER_NUM_RETURN, "\n",
+                        "PRIMER_PRODUCT_SIZE_RANGE=", range_low, "-", range_high, "\n", 
+                        "=")
+for (i in seq_along(extendedSequences)) {
     input_str <- paste0("SEQUENCE_ID=", names(seqs)[i], "\n",
                         "SEQUENCE_TEMPLATE=", seqs[[i]], "\n",
-                        "PRIMER_OPT_SIZE=22\n", # Optimal Primer Length
-                        "PRIMER_MIN_TM=55\n", # Minimum Tm
-                        "PRIMER_OPT_TM=60\n", # Optimal Tm
-                        "PRIMER_MAX_TM=65\n", # Maximum Tm
-                        "PRIMER_OPT_GC_PERCENT=50\n", # Optimal GC%
-                        "PRIMER_SALT_MONOVALENT=40\n", # Concentration of Monovalent Cations
-                        "PRIMER_SALT_DIVALENT=2.5\n", # Concentration of Divalent Cations
-                        "PRIMER_DNTP_CONC=0.3\n", # dNTP Concentration
-                        "PRIMER_NUM_RETURN=", n_primer_pairs, "\n",
-                        "PRIMER_PRODUCT_SIZE_RANGE=", range_low, "-", range_high, "\n", 
-                        "=") 
+                        settings
+                       ) 
             
     # write the input string to a temporary file
     input_file <- tempfile()
     writeLines(input_str, input_file)
-    
-    cmd <- paste("cat", input_file, "| primer3/src/primer3_core")
-    
+
     # Capture the output of the command
+    cmd <- paste("cat", input_file, "| primer3/src/primer3_core")
     cmd_output <- system(cmd, intern = TRUE)
-    
-    # Remove empty strings from the output
     cmd_output <- cmd_output[nzchar(cmd_output)]
     
-    # Initialize vectors to hold column names and values
+    # Loop over each line in the output to separate column names and values
     col_names <- c()
     values <- c()
-    
-    # Loop over each line in the output to separate column names and values
     for(line in cmd_output) {
       split_line <- strsplit(line, "=")[[1]]
       if(length(split_line) == 2) { # If line can be split into name and value
@@ -107,10 +112,6 @@ harmonized_df_list <- lapply(df_list, harmonize_df, all_colnames = all_colnames)
 
 # rbind all harmonized data frames
 primers <- do.call(rbind, harmonized_df_list)
-
-  # Subset the dataframe to include only columns whose names end with "SEQUENCE" or "PRODUCT_SIZE"
-  #primers <- primers[, grepl("SEQUENCE$|PRODUCT_SIZE$", colnames(primers))]
-
   s4_colname <- paste0("primer3_", s4_colname)
   S4Vectors::mcols(guideSet)[[s4_colname]] <- primers
   return(guideSet)
