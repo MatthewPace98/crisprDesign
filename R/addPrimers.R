@@ -24,8 +24,17 @@ setMethod("addPrimers",
 ){
     object <- .validateGuideSet(object)
     object <- .addPrimersToGuideSet(guideSet=object,
-                          flank_len=flank_len,
-                           s4_colname=name)
+                                    flank_len=flank_len,
+                                    s4_colname=name,
+                                    PRIMER_OPT_SIZE=PRIMER_OPT_SIZE, # Optimal Primer Length
+                                    PRIMER_MIN_TM=PRIMER_MIN_TM, # Minimum Tm
+                                    PRIMER_OPT_TM=PRIMER_OPT_TM, # Optimal Tm
+                                    PRIMER_MAX_TM=PRIMER_MAX_TM, # Maximum Tm
+                                    PRIMER_OPT_GC_PERCENT=PRIMER_OPT_GC_PERCENT, # Optimal GC%
+                                    PRIMER_SALT_MONOVALENT=PRIMER_SALT_MONOVALENT, # Concentration of Monovalent Cations
+                                    PRIMER_SALT_DIVALENT=PRIMER_SALT_DIVALENT, # Concentration of Divalent Cations
+                                    PRIMER_DNTP_CONC=PRIMER_DNTP_CONC, # dNTP Concentration
+                                    PRIMER_NUM_RETURN=PRIMER_NUM_RETURN)
     return(object)
 })
 
@@ -40,7 +49,16 @@ setMethod("addPrimers",
 
 .addPrimersToGuideSet <- function(guideSet,
                                   flank_len,
-                                  s4_colname
+                                  s4_colname,
+                                  PRIMER_OPT_SIZE, 
+                                  PRIMER_MIN_TM,
+                                  PRIMER_OPT_TM,
+                                  PRIMER_MAX_TM,
+                                  PRIMER_OPT_GC_PERCENT,
+                                  PRIMER_SALT_MONOVALENT,
+                                  PRIMER_SALT_DIVALENT,
+                                  PRIMER_DNTP_CONC,
+                                  PRIMER_NUM_RETURN
 ){
   start <- -flank_len-20
   end <- flank_len-1
